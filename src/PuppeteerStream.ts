@@ -14,6 +14,8 @@ let currentIndex = 0;
 type StreamLaunchOptions = LaunchOptions & {
 		allowIncognito?: boolean;
 	} & {
+		startDelay?: number;
+	} & {
 		closeDelay?: number;
 	} & {
 		extensionPath?: string;
@@ -103,6 +105,9 @@ export async function launch(
 	} else {
 		browser = await puppeteerLaunch(opts);
 	}
+
+	// Delay to let Chrome load the extension
+	await new Promise((r) => setTimeout(r, opts.startDelay || 250));
 
 	if (opts.allowIncognito) {
 		const settings = await browser.newPage();
