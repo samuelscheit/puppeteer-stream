@@ -40,6 +40,7 @@ The method [`launch(options)`](https://github.com/SamuelScheit/puppeteer-stream/
 ```ts
 {
 	allowIncognito?: boolean, // to be able to use incognito mode
+	startDelay?: number, // to fix rarely occurring "Error: net::ERR_BLOCKED_BY_CLIENT at chrome-extension://jjndjgheafjngoipoacpjgeicjeomjli/options.html", set and increase number (in ms). Default: 250 ms
 	closeDelay?: number, // to fix rarely occurring TargetCloseError, set and increase number (in ms)
 	extensionPath?: string, // used internally to load the puppeteer-stream browser extension (needed for electron https://github.com/SamuelScheit/puppeteer-stream/issues/137)
 }
