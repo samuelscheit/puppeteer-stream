@@ -4,6 +4,7 @@ export type RecordingOptions = {
 	index: number;
 	video: boolean;
 	audio: boolean;
+	audioPlayback: boolean;
 	frameSize: number;
 	audioBitsPerSecond: number;
 	videoBitsPerSecond: number;
@@ -19,6 +20,7 @@ const START_RECORDING = async ({
 	index,
 	video,
 	audio,
+	audioPlayback,
 	frameSize,
 	audioBitsPerSecond,
 	videoBitsPerSecond,
@@ -35,6 +37,7 @@ const START_RECORDING = async ({
 			index,
 			video,
 			audio,
+			audioPlayback,
 			frameSize,
 			audioBitsPerSecond,
 			videoBitsPerSecond,
@@ -75,9 +78,11 @@ const START_RECORDING = async ({
 	if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
 
 	// route captured audio back to speakers for real-time playback
-	const audioCtx = new AudioContext();
-	const source = audioCtx.createMediaStreamSource(stream);
-	source.connect(audioCtx.destination);
+	if (audioPlayback) {
+		const audioCtx = new AudioContext();
+		const source = audioCtx.createMediaStreamSource(stream);
+		source.connect(audioCtx.destination);
+	}
 
 	const recorder = new MediaRecorder(stream, {
 		audioBitsPerSecond,
