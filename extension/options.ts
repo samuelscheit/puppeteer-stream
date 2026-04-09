@@ -74,6 +74,11 @@ const START_RECORDING = async ({
 	// somtimes needed to sync audio and video
 	if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
 
+	// route captured audio back to speakers for real-time playback
+	const audioCtx = new AudioContext();
+	const source = audioCtx.createMediaStreamSource(stream);
+	source.connect(audioCtx.destination);
+
 	const recorder = new MediaRecorder(stream, {
 		audioBitsPerSecond,
 		videoBitsPerSecond,
