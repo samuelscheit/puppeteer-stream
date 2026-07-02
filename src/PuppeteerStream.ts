@@ -300,23 +300,23 @@ export async function getStream(page: Page, opts: getStreamOptions) {
 		if (url.searchParams.get("index") != index.toString()) return;
 
 		async function close() {
-			if (!stream.readableEnded && !stream.writableEnded) stream.end();
 			if (!extension.isClosed() && extension.browser().isConnected()) {
 				// @ts-ignore
-				extension.evaluate((index) => STOP_RECORDING(index), index);
+				extension.evaluate((index) => STOP_RECORDING(index), index).catch(() => {});
 			}
 
-			if (ws.readyState != WebSocket.CLOSED) {
-				setTimeout(() => {
-					// await pending messages to be sent and then close the socket
-					if (ws.readyState != WebSocket.CLOSED) ws.close();
-				}, opts.streamConfig?.closeTimeout ?? 5000);
+			if (ws.readyState === WebSocket.CLOSED) {
+				if (!stream.destroyed && !stream.readableEnded && !stream.writableEnded) {
+					stream.end();
+				}
 			}
 			(await wss).off("connection", onConnection);
 		}
 
 		ws.on("message", (data) => {
-			stream.write(data);
+			if (!stream.destroyed && !stream.writableEnded) {
+				stream.write(data);
+			}
 		});
 
 		ws.on("close", close);

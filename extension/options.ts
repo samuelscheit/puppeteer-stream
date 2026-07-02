@@ -81,12 +81,22 @@ const START_RECORDING = async ({
 		mimeType,
 	});
 
+	let pendingOperations = 0;
+	let stopCalled = false;
+
 	recorder.ondataavailable = async (e) => {
 		if (!e.data.size) return;
+		pendingOperations++;
 
-		const buffer = await e.data.arrayBuffer();
+		try {
+			const buffer = await e.data.arrayBuffer();
+			client.send(buffer);
+		} catch (err) {}
 
-		client.send(buffer);
+		pendingOperations--;
+		if (stopCalled && pendingOperations === 0) {
+			if (client.readyState === WebSocket.OPEN) client.close();
+		}
 	};
 
 	recorders[index] = recorder;
@@ -102,7 +112,10 @@ const START_RECORDING = async ({
 				track.stop();
 			});
 
-			if (client.readyState === WebSocket.OPEN) client.close();
+			stopCalled = true;
+			if (pendingOperations === 0) {
+				if (client.readyState === WebSocket.OPEN) client.close();
+			}
 		} catch (error) {}
 	};
 
