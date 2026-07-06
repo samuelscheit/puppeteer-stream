@@ -78,6 +78,7 @@ export async function launch(
 
 	addToArgs("--autoplay-policy=no-user-gesture-required");
 	addToArgs("--auto-accept-this-tab-capture");
+	addToArgs(`--allowlisted-extension-id=${extensionId}`);
 
 	if (opts.defaultViewport?.width && opts.defaultViewport?.height) {
 		opts.args.push(`--window-size=${opts.defaultViewport.width},${opts.defaultViewport.height}`);
