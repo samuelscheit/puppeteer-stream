@@ -301,7 +301,7 @@ export async function getStream(page: Page, opts: getStreamOptions): Promise<Pup
 	}) as PuppeteerStream;
 
 	stream.stop = async () => {
-		if (!extension.isClosed() && extension.browser().isConnected()) {
+		if (!extension.isClosed() && extension.browser().connected) {
 			// @ts-ignore
 			await extension.evaluate((index) => STOP_RECORDING(index), index).catch(() => {});
 		}
@@ -312,7 +312,7 @@ export async function getStream(page: Page, opts: getStreamOptions): Promise<Pup
 		if (url.searchParams.get("index") != index.toString()) return;
 
 		async function close() {
-			if (!extension.isClosed() && extension.browser().isConnected()) {
+			if (!extension.isClosed() && extension.browser().connected) {
 				// @ts-ignore
 				extension.evaluate((index) => STOP_RECORDING(index), index).catch(() => {});
 			}
